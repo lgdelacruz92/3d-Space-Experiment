@@ -33,7 +33,6 @@ const setupLights = scene => {
     var light = new THREE.PointLight( 0xffffff, 1, 100 );
     light.position.set( 0, 10, 10 );
     scene.add( light );
-
 }
 
 const makeRightWall = scene => {
