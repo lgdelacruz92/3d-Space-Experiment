@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { setupWorld } from './world/setup';
+import Boid from './world/Boid';
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -13,6 +14,12 @@ camera.position.y = 10;
 camera.lookAt(0, 0, 0);
 
 setupWorld(scene);
+
+const sphereGeometry = new THREE.SphereGeometry(0.2);
+const boid = new Boid(sphereGeometry, scene);
+boid.setPosition(0, 5, 0);
+
+console.log('Testing');
 
 var animate = function () {
     requestAnimationFrame( animate );
