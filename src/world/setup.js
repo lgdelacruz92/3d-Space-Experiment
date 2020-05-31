@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const floorTexture = new THREE.TextureLoader().load( '../textures/floor.jpg' );
+const floorTexture = new THREE.TextureLoader().load( '../textures/floor.jpg');
 const wallTexture = new THREE.TextureLoader().load('../textures/wall.jpg');
 const plane = new THREE.PlaneGeometry(10, 10);
 
