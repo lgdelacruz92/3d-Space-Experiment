@@ -30,9 +30,15 @@ const makeLeftWall = scene => {
 }
 
 const setupLights = scene => {
-    var light = new THREE.PointLight( 0xffffff, 1, 100 );
-    light.position.set( 0, 10, 10 );
-    scene.add( light );
+    var light2 = new THREE.PointLight( 0xffffff, 1, 100 );
+    light2.position.set( -10, -10, 10 );
+    light2.castShadow = true;
+    scene.add( light2 );
+
+    var light3 = new THREE.PointLight( 0xffffff, 1, 100 );
+    light3.position.set( 10, 10, -10 );
+    light3.castShadow = true;
+    scene.add( light3 );
 }
 
 const makeRightWall = scene => {
