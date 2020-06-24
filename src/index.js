@@ -3,6 +3,7 @@ import { setupWorld } from './world/setup';
 import Boid from './world/Boid';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CONSTANTS } from './constants';
+import { map } from './utils';
 
 window.onload = () => {
     var scene = new THREE.Scene();
@@ -24,8 +25,18 @@ window.onload = () => {
     setupWorld(scene);
     
     const sphereGeometry = new THREE.SphereGeometry(0.2);
-    const boid = new Boid(sphereGeometry, scene);
-    boid.setPosition(0, CONSTANTS.world.w / 2, 0);
+
+    const boids = [];
+
+    for (let i = 0; i < CONSTANTS.num_boids; i++) {
+        const boid = new Boid(sphereGeometry, scene);
+        boid.setPosition(
+            map(Math.random(), 0, 1, -CONSTANTS.world.w / 2, CONSTANTS.world.w / 2), 
+            map(Math.random(), 0, 1, 0, CONSTANTS.world.h), 
+            map(Math.random(), 0, 1, -CONSTANTS.world.z / 2, CONSTANTS.world.z / 2)
+        );
+        boids.push(boid);
+    }
     
     controls.update();
     console.log('Hello World');
@@ -34,7 +45,9 @@ window.onload = () => {
         requestAnimationFrame( animate );
 
         controls.update();
-        boid.update();
+        for (let i = 0; i < CONSTANTS.num_boids; i++) {
+            boids[i].update();
+        }
 
         renderer.render( scene, camera );
     };
