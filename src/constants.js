@@ -4,5 +4,6 @@ export const CONSTANTS = {
         h: 30,
         z: 30
     },
-    num_boids: 100
+    num_boids: 100,
+    field_of_view_radius: 2
 }

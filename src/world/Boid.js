@@ -6,7 +6,12 @@ class Boid {
         const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
         this.boid = new THREE.Mesh( geometry, material );
         this.vel = randomVec();
+        this.a = { x: 0, y: 0, z: 0};
         scene.add( this.boid );
+    }
+
+    push(f) {
+        this.a = f;
     }
 
     setPosition(x, y, z) {
@@ -16,9 +21,18 @@ class Boid {
     }
 
     update() {
+
+        // accumulation vel to get position
         this.boid.position.x += this.vel.x;
         this.boid.position.y += this.vel.y;
         this.boid.position.z += this.vel.z;
+
+        // accumation a to get vel
+        this.vel.x += this.a.x;
+        this.vel.y += this.a.y;
+        this.vel.z += this.a.z;
+
+        this.a = { x: 0, y: 0, z: 0 };
 
         if (this.boid.position.x > CONSTANTS.world.w / 2) {
             this.boid.position.x = -CONSTANTS.world.w / 2;
