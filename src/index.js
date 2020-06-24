@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { setupWorld } from './world/setup';
 import Boid from './world/Boid';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { CONSTANTS } from './constants';
 
 window.onload = () => {
     var scene = new THREE.Scene();
@@ -16,15 +17,15 @@ window.onload = () => {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     
     var controls = new OrbitControls( camera, renderer.domElement );
-    camera.position.z = 12;
-    camera.position.y = 10;
+    camera.position.z = CONSTANTS.world.z;
+    camera.position.y = CONSTANTS.world.h / 3;
     camera.lookAt(0, 0, 0);
     
     setupWorld(scene);
     
     const sphereGeometry = new THREE.SphereGeometry(0.2);
     const boid = new Boid(sphereGeometry, scene);
-    boid.setPosition(0, 5, 0);
+    boid.setPosition(0, CONSTANTS.world.w / 2, 0);
     
     controls.update();
     console.log('Hello World');
@@ -33,6 +34,7 @@ window.onload = () => {
         requestAnimationFrame( animate );
 
         controls.update();
+        boid.update();
 
         renderer.render( scene, camera );
     };
