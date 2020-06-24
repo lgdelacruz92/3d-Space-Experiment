@@ -16,7 +16,7 @@ window.onload = () => {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     
     var controls = new OrbitControls( camera, renderer.domElement );
-    camera.position.z = 20;
+    camera.position.z = 12;
     camera.position.y = 10;
     camera.lookAt(0, 0, 0);
     
@@ -27,6 +27,7 @@ window.onload = () => {
     boid.setPosition(0, 5, 0);
     
     controls.update();
+    console.log('Hello World');
 
     var animate = function () {
         requestAnimationFrame( animate );

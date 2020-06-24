@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 
 const floorTexture = new THREE.TextureLoader().load( '../textures/floor.jpg');
+const alphamap = new THREE.TextureLoader().load( '../textures/alphamap.png');
 const wallTexture = new THREE.TextureLoader().load('../textures/wall.jpg');
 const plane = new THREE.PlaneGeometry(10, 10);
 
 const makeFloor = scene => {
-    var material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: floorTexture } );
+    var material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: floorTexture, alphaMap: alphamap } );
     var floor = new THREE.Mesh( plane, material );
     scene.add( floor );
 
@@ -13,7 +14,7 @@ const makeFloor = scene => {
 }
 
 const makeBackWall = scene => {
-    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture });
+    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture, alphaMap: alphamap });
     const backWall = new THREE.Mesh(plane, material);
     scene.add(backWall);
     backWall.position.y = 5;
@@ -21,7 +22,7 @@ const makeBackWall = scene => {
 }
 
 const makeLeftWall = scene => {
-    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture });
+    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture, alphaMap: alphamap });
     const leftWall = new THREE.Mesh(plane, material);
     scene.add(leftWall);
     leftWall.position.x = -5;
@@ -31,18 +32,12 @@ const makeLeftWall = scene => {
 
 const setupLights = scene => {
     var light2 = new THREE.PointLight( 0xffffff, 1, 100 );
-    light2.position.set( -10, -10, 10 );
-    light2.castShadow = true;
+    light2.position.set( 0, 10, 10 );
     scene.add( light2 );
-
-    var light3 = new THREE.PointLight( 0xffffff, 1, 100 );
-    light3.position.set( 10, 10, -10 );
-    light3.castShadow = true;
-    scene.add( light3 );
 }
 
 const makeRightWall = scene => {
-    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture });
+    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture, alphaMap: alphamap });
     const rightWall = new THREE.Mesh(plane, material);
     scene.add(rightWall);
     rightWall.position.x = 5;
