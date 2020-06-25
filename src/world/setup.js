@@ -15,11 +15,19 @@ const makeFloor = scene => {
 }
 
 const makeBackWall = scene => {
-    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture, alphaMap: alphamap });
+    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture, opacity: 0.3 });
     const backWall = new THREE.Mesh(plane, material);
     scene.add(backWall);
     backWall.position.y = CONSTANTS.world.h / 2;
     backWall.position.z = -CONSTANTS.world.z / 2;
+}
+
+const makeFrontWall = scene => {
+    const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, map: wallTexture, opacity: 0.3 });
+    const backWall = new THREE.Mesh(plane, material);
+    scene.add(backWall);
+    backWall.position.y = CONSTANTS.world.h / 2;
+    backWall.position.z = CONSTANTS.world.z / 2;
 }
 
 const makeLeftWall = scene => {
@@ -33,7 +41,7 @@ const makeLeftWall = scene => {
 
 const setupLights = scene => {
     var light2 = new THREE.PointLight( 0xffffff, 1, 100 );
-    light2.position.set( 0, CONSTANTS.world.h / 2, CONSTANTS.world.z / 2 );
+    light2.position.set( 0, CONSTANTS.world.h / 2, 0 );
     scene.add( light2 );
 }
 
@@ -49,6 +57,7 @@ const makeRightWall = scene => {
 export const setupWorld = (scene) => {
     makeFloor(scene);
     makeBackWall(scene);
+    makeFrontWall(scene);
     makeLeftWall(scene);
     makeRightWall(scene);
     setupLights(scene);

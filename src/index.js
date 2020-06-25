@@ -18,9 +18,8 @@ window.onload = () => {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
     var controls = new OrbitControls(camera, renderer.domElement);
-    camera.position.z = CONSTANTS.world.z;
     camera.position.y = CONSTANTS.world.h / 3;
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(0, CONSTANTS.world.h / 2, 0);
 
     setupWorld(scene);
 
