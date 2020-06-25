@@ -7,23 +7,23 @@ import { map, dist } from './utils';
 
 window.onload = () => {
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
     const canvasEl = document.querySelector('#scene_canvas');
     var renderer = new THREE.WebGLRenderer({ canvas: canvasEl });
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-    
-    var controls = new OrbitControls( camera, renderer.domElement );
+
+    var controls = new OrbitControls(camera, renderer.domElement);
     camera.position.z = CONSTANTS.world.z;
     camera.position.y = CONSTANTS.world.h / 3;
     camera.lookAt(0, 0, 0);
-    
+
     setupWorld(scene);
-    
+
     const sphereGeometry = new THREE.SphereGeometry(0.2);
 
     const boids = [];
@@ -31,63 +31,132 @@ window.onload = () => {
     for (let i = 0; i < CONSTANTS.num_boids; i++) {
         const boid = new Boid(sphereGeometry, scene);
         boid.setPosition(
-            map(Math.random(), 0, 1, -CONSTANTS.world.w / 2, CONSTANTS.world.w / 2), 
-            map(Math.random(), 0, 1, 0, CONSTANTS.world.h), 
+            map(Math.random(), 0, 1, -CONSTANTS.world.w / 2, CONSTANTS.world.w / 2),
+            map(Math.random(), 0, 1, 0, CONSTANTS.world.h),
             map(Math.random(), 0, 1, -CONSTANTS.world.z / 2, CONSTANTS.world.z / 2)
         );
         boids.push(boid);
     }
-    
+
     controls.update();
-    console.log('Hello World');
+    console.log('Hello World 7');
 
     var animate = function () {
-        requestAnimationFrame( animate );
+        requestAnimationFrame(animate);
 
         controls.update();
-        alignment();
+        
         for (let i = 0; i < CONSTANTS.num_boids; i++) {
-            boids[i].update();
+            const boid = boids[i];
+            const alignmentForce = alignment(boid);
+            const cohesionForce = cohesion(boid);
+            console.log(alignmentForce, cohesionForce);
+            boid.push(alignmentForce);
+            boid.push(cohesionForce);
+            boid.update();
         }
 
-        renderer.render( scene, camera );
+        renderer.render(scene, camera);
     };
 
 
-    var alignment = () => {
-        for (let i = 0; i < CONSTANTS.num_boids; i++) {
-            const nearBoids = [];
-            const boid = boids[i];
-            for (let j = 0; j < CONSTANTS.num_boids; j++) {
-                // console.log({ boid, other: boids[j]})
-                if (dist(boid.boid.position, boids[j].boid.position) < CONSTANTS.field_of_view_radius) {
-                    nearBoids.push(boids[j]);
-                }
+    var alignment = (boid) => {
+        const maxSpeed = .03;
+        const nearBoids = [];
+        for (let j = 0; j < CONSTANTS.num_boids; j++) {
+            if (boid != boids[j] && dist(boid.boid.position, boids[j].boid.position) < CONSTANTS.field_of_view_radius) {
+                nearBoids.push(boids[j]);
             }
+        }
 
-            // collect average velocity
-            const averageVel = { x: 0, y: 0, z: 0 };
-            for (let b of nearBoids) {
-                averageVel.x += b.vel.x;
-                averageVel.y += b.vel.y;
-                averageVel.z += b.vel.z;
-            }
+        // collect average velocity
+        const averageVel = { x: 0, y: 0, z: 0 };
+        for (let b of nearBoids) {
+            averageVel.x += b.vel.x;
+            averageVel.y += b.vel.y;
+            averageVel.z += b.vel.z;
+        }
+
+        if (nearBoids.length > 0) {
             averageVel.x /= nearBoids.length;
             averageVel.y /= nearBoids.length;
             averageVel.z /= nearBoids.length;
 
             // get steering force
             const steering = {
-                x: averageVel.x - boid.vel.x,
-                y: averageVel.y - boid.vel.y,
-                z: averageVel.z - boid.vel.z
+                x: (averageVel.x - boid.vel.x),
+                y: (averageVel.y - boid.vel.y),
+                z: (averageVel.z - boid.vel.z)
+            };
+
+            const steeringMag = Math.sqrt(
+                steering.x * steering.x +
+                steering.y * steering.y +
+                steering.z * steering.z);
+
+            if (steeringMag > 0) {
+                const scaledSteering = {
+                    x: steering.x * (maxSpeed / steeringMag),
+                    y: steering.y * (maxSpeed / steeringMag),
+                    z: steering.z * (maxSpeed / steeringMag)
+                }
+                return scaledSteering;
+            }
+            return { x: 0, y: 0, z: 0 };
+        }
+        return { x: 0, y: 0, z: 0 }
+    }
+
+    var cohesion = (boid) => {
+
+        const nearBoids = [];
+
+        for (let j = 0; j < CONSTANTS.num_boids; j++) {
+            if (boid != boids[j] && dist(boid.boid.position, boids[j].boid.position) < CONSTANTS.field_of_view_radius) {
+                nearBoids.push(boids[j]);
+            }
+        }
+
+        // collect average position
+        const avgPos = { x: 0, y: 0, z: 0 };
+        for (let b of nearBoids) {
+            avgPos.x += b.boid.position.x;
+            avgPos.y += b.boid.position.y;
+            avgPos.z += b.boid.position.z;
+        }
+
+        if (nearBoids.length > 0) {
+            avgPos.x /= nearBoids.length;
+            avgPos.y /= nearBoids.length;
+            avgPos.z /= nearBoids.length;
+
+            // get steering force
+            const steering = {
+                x: (avgPos.x - boid.boid.position.x) - boid.vel.x,
+                y: (avgPos.y - boid.boid.position.y) - boid.vel.y,
+                z: (avgPos.z - boid.boid.position.z) - boid.vel.z
             }
 
-            boid.push(steering);
+            const steeringMag = Math.sqrt(
+                steering.x * steering.x +
+                steering.y * steering.y +
+                steering.z * steering.z);
 
+            if (steeringMag > 0) {
+                const maxSpeed = .005;
+                const scaledSteering = {
+                    x: steering.x * (maxSpeed / steeringMag),
+                    y: steering.y * (maxSpeed / steeringMag),
+                    z: steering.z * (maxSpeed / steeringMag)
+                }
+                return scaledSteering;
+            }
+            return { x: 0, y: 0, z: 0};
+            
         }
+        return { x: 0, y: 0, z: 0};
     }
-    
+
     animate();
 };
 

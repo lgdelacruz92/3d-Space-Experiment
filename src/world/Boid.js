@@ -11,7 +11,9 @@ class Boid {
     }
 
     push(f) {
-        this.a = f;
+        this.a.x += f.x;
+        this.a.y += f.y;
+        this.a.z += f.z;
     }
 
     setPosition(x, y, z) {
