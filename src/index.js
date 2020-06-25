@@ -50,9 +50,10 @@ window.onload = () => {
             const boid = boids[i];
             const alignmentForce = alignment(boid);
             const cohesionForce = cohesion(boid);
-            console.log(alignmentForce, cohesionForce);
+            const separationForce = separation(boid);
             boid.push(alignmentForce);
             boid.push(cohesionForce);
+            boid.push(separationForce);
             boid.update();
         }
 
@@ -155,6 +156,65 @@ window.onload = () => {
             
         }
         return { x: 0, y: 0, z: 0};
+    }
+
+    var separation = (boid) => {
+        const nearBoids = [];
+
+        for (let j = 0; j < CONSTANTS.num_boids; j++) {
+            if (boid != boids[j] && dist(boid.boid.position, boids[j].boid.position) < CONSTANTS.field_of_view_radius) {
+                nearBoids.push(boids[j]);
+            }
+        }
+
+        if (nearBoids.length > 0) {
+            for (let other of nearBoids) {
+                // vector between boid and other
+                const alertVec = {
+                    x: other.boid.position.x - boid.boid.position.x,
+                    y: other.boid.position.y - boid.boid.position.y,
+                    z: other.boid.position.z - boid.boid.position.z
+                };
+
+                if (alertVec.x > 0.01 && alertVec.y > 0.01 && alertVec.z > 0.01) {
+                    const inverseAlertVec = {
+                        x: (-1 / alertVec.x),
+                        y: (-1 / alertVec.y),
+                        z: (-1 / alertVec.z)
+                    }
+                    
+                    if (inverseAlertVec.x > 0.1) {
+                        inverseAlertVec.x = 0.1;
+                    }
+
+                    if (inverseAlertVec.y > 0.1) {
+                        inverseAlertVec.y = 0.1;
+                    }
+
+                    if (inverseAlertVec.z > 0.1) {
+                        inverseAlertVec.z = 0.1;
+                    }
+
+                    if (inverseAlertVec.x < -0.1) {
+                        inverseAlertVec.x = -0.1;
+                    }
+
+                    if (inverseAlertVec.y < -0.1) {
+                        inverseAlertVec.y = -0.1;
+                    }
+
+                    if (inverseAlertVec.z < -0.1) {
+                        inverseAlertVec.z = -0.1;
+                    }
+
+                    return inverseAlertVec;
+                }
+                return { x: 0, y: 0, z: 0 };
+            }
+            return { x: 0, y: 0, z: 0 };
+        }
+        return { x: 0, y: 0, z: 0 };
+
     }
 
     animate();

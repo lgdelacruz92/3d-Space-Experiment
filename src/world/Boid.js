@@ -14,6 +14,30 @@ class Boid {
         this.a.x += f.x;
         this.a.y += f.y;
         this.a.z += f.z;
+
+        if (this.a.x > 0.1) {
+            this.a.x = 0.1;
+        }
+
+        if (this.a.x < -0.1) {
+            this.a.x = -0.1;
+        }
+
+        if (this.a.y > 0.1) {
+            this.a.y = 0.1;
+        }
+
+        if (this.a.y < -0.1) {
+            this.a.y = -0.1;
+        }
+
+        if (this.a.z > 0.1) {
+            this.a.z = 0.1;
+        }
+
+        if (this.a.z < -0.1) {
+            this.a.z = -0.1;
+        }
     }
 
     setPosition(x, y, z) {
@@ -33,6 +57,30 @@ class Boid {
         this.vel.x += this.a.x;
         this.vel.y += this.a.y;
         this.vel.z += this.a.z;
+
+        if (this.vel.x > 0.1) {
+            this.vel.x = 0.1;
+        }
+
+        if (this.vel.x < -0.1) {
+            this.vel.x = -0.1;
+        }
+
+        if (this.vel.y > 0.1) {
+            this.vel.y > 0.1;
+        }
+
+        if (this.vel.y < -0.1) {
+            this.vel.y = -0.1;
+        }
+
+        if (this.vel.z > 0.1) {
+            this.vel.z = 0.1;
+        }
+
+        if (this.vel.z < -0.1) {
+            this.vel.z = -0.1;
+        }
 
         this.a = { x: 0, y: 0, z: 0 };
 
