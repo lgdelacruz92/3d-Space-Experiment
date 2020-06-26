@@ -116,8 +116,6 @@ class Boid {
         this.material = new THREE.MeshPhongMaterial( { color: 0xff0000 } );
         this.boid = new THREE.Mesh( this.geometry, this.material );
 
-        // const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-        // this.boid = new THREE.Mesh( geometry, material );
         this.vel = randomVec();
         this.a = { x: 0, y: 0, z: 0};
         scene.add( this.boid );
@@ -215,8 +213,8 @@ class Boid {
         if (this.boid.position.x > CONSTANTS.world.w / 2) {
             this.boid.position.x = -CONSTANTS.world.w / 2;
         }
-        if (this.boid.position.y > CONSTANTS.world.w) {
-            this.boid.position.y = 0;
+        if (this.boid.position.y > CONSTANTS.world.w / 2) {
+            this.boid.position.y = -CONSTANTS.world.w / 2;
         }
 
         if (this.boid.position.z > CONSTANTS.world.w / 2) {
@@ -227,8 +225,8 @@ class Boid {
             this.boid.position.x = CONSTANTS.world.w / 2;
         }
 
-        if (this.boid.position.y < 0) {
-            this.boid.position.y = CONSTANTS.world.w;
+        if (this.boid.position.y < -CONSTANTS.world.w / 2) {
+            this.boid.position.y = CONSTANTS.world.w / 2;
         }
 
         if (this.boid.position.z < -CONSTANTS.world.w / 2) {

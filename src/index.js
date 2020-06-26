@@ -7,7 +7,7 @@ import { map, dist } from './utils';
 
 window.onload = () => {
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 
     const canvasEl = document.querySelector('#scene_canvas');
     var renderer = new THREE.WebGLRenderer({ canvas: canvasEl });
@@ -31,7 +31,7 @@ window.onload = () => {
         const boid = new Boid(sphereGeometry, scene);
         boid.setPosition(
             map(Math.random(), 0, 1, -CONSTANTS.world.w / 2, CONSTANTS.world.w / 2),
-            map(Math.random(), 0, 1, 0, CONSTANTS.world.h),
+            map(Math.random(), 0, 1, 0, -CONSTANTS.world.h / 2, CONSTANTS.world.w / 2),
             map(Math.random(), 0, 1, -CONSTANTS.world.z / 2, CONSTANTS.world.z / 2)
         );
         boids.push(boid);
