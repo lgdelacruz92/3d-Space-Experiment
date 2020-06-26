@@ -49,8 +49,6 @@ window.onload = () => {
 
         controls.update();
 
-        console.log({alignmentOn, cohesionOn, separationOn});
-        
         for (let i = 0; i < CONSTANTS.num_boids; i++) {
             const boid = boids[i];
             if (alignmentOn) {
@@ -157,7 +155,7 @@ window.onload = () => {
                 steering.z * steering.z);
 
             if (steeringMag > 0) {
-                const maxSpeed = .01;
+                const maxSpeed = .005;
                 const scaledSteering = {
                     x: steering.x * (maxSpeed / steeringMag),
                     y: steering.y * (maxSpeed / steeringMag),

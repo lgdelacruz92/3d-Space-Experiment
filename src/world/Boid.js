@@ -18,6 +18,30 @@ const normalize = a => {
     return { x: a.x / mag(a), y: a.y / mag(a), z: a.z / mag(a) };
 }
 
+const makeVec = (a, b) => {
+    return {
+        x: b.x - a.x,
+        y: b.y - a.y,
+        z: b.z - a.z
+    }
+}
+
+const addVec = (a, b) => {
+    return {
+        x: a.x + b.x,
+        y: a.y + b.y,
+        z: a.z + b.z
+    }
+}
+
+const scale = (a, s) => {
+    return {
+        x: a.x * s,
+        y: a.y * s,
+        z: a.z * s
+    };
+}
+
 class Boid {
     constructor(geometry, scene) {
 
@@ -162,15 +186,7 @@ class Boid {
 
     update() {
 
-        // accumulation vel to get position
-        this.boid.position.x += this.vel.x;
-        this.boid.position.y += this.vel.y;
-        this.boid.position.z += this.vel.z;
-
-        // accumation a to get vel
-        this.vel.x += this.a.x;
-        this.vel.y += this.a.y;
-        this.vel.z += this.a.z;
+        console.log({ velocity: this.vel });
 
         if (this.vel.x > 0.1) {
             this.vel.x = 0.1;
@@ -181,7 +197,7 @@ class Boid {
         }
 
         if (this.vel.y > 0.1) {
-            this.vel.y > 0.1;
+            this.vel.y = 0.1;
         }
 
         if (this.vel.y < -0.1) {
@@ -195,6 +211,16 @@ class Boid {
         if (this.vel.z < -0.1) {
             this.vel.z = -0.1;
         }
+
+        // accumulation vel to get position
+        this.boid.position.x += this.vel.x;
+        this.boid.position.y += this.vel.y;
+        this.boid.position.z += this.vel.z;
+
+        // accumation a to get vel
+        this.vel.x += this.a.x;
+        this.vel.y += this.a.y;
+        this.vel.z += this.a.z;
 
         this.boid.rotation.x = 0;
         this.boid.rotation.y = 0;
@@ -232,6 +258,52 @@ class Boid {
         if (this.boid.position.z < -CONSTANTS.world.w / 2) {
             this.boid.position.z = CONSTANTS.world.w / 2;
         }
+
+        if (this.boid.position.x + 3 > CONSTANTS.world.w / 2) {
+            const pointInRightWall = { x: CONSTANTS.world.w / 2, y: 0, z: 0 };
+            const unitVec = { x: 0, y: 0, z: 1 };
+            this.collisionAvoidance(pointInRightWall, unitVec, this.boid.position);
+        }
+
+        if (this.boid.position.x - 3 < -CONSTANTS.world.w /2) {
+            const pointInRightWall = { x: -CONSTANTS.world.w / 2, y: 0, z: 0 };
+            const unitVec = { x: 0, y: 0, z: 1 };
+            this.collisionAvoidance(pointInRightWall, unitVec, this.boid.position);
+        }
+
+        if (this.boid.position.y + 3 > CONSTANTS.world.w /2) {
+            const pointInRightWall = { x: 0, y: CONSTANTS.world.w / 2, z: 0 };
+            const unitVec = { x: 1, y: 0, z: 0 };
+            this.collisionAvoidance(pointInRightWall, unitVec, this.boid.position);
+        }
+
+        if (this.boid.position.y - 3 < -CONSTANTS.world.w /2) {
+            const pointInRightWall = { x: 0, y: -CONSTANTS.world.w / 2, z: 0 };
+            const unitVec = { x: 1, y: 0, z: 0 };
+            this.collisionAvoidance(pointInRightWall, unitVec, this.boid.position);
+        }
+
+        if (this.boid.position.z + 3 > CONSTANTS.world.w /2) {
+            const pointInRightWall = { x: 0, y: 0, z: CONSTANTS.world.w/2};
+            const unitVec = { x: 1, y: 0, z: 0 };
+            this.collisionAvoidance(pointInRightWall, unitVec, this.boid.position);
+        }
+
+        if (this.boid.position.z - 3 < -CONSTANTS.world.w /2) {
+            const pointInRightWall = { x: 0, y: 0, z: -CONSTANTS.world.w / 2 };
+            const unitVec = { x: 1, y: 0, z: 0 };
+            this.collisionAvoidance(pointInRightWall, unitVec, this.boid.position);
+        }
+    }
+
+    collisionAvoidance(wall, unitVec, position) {
+        const p_pointInRightWall = makeVec(wall, position);
+        const projectionDist = dot(p_pointInRightWall, unitVec);
+        const scaledVec = scale(unitVec, projectionDist);
+        const projectedPosition = addVec(wall, scaledVec);
+
+        const negativeProjectionPosition = scale(projectedPosition, -1);
+        this.push(negativeProjectionPosition);
     }
 }
 
