@@ -4,10 +4,14 @@ import Boid from './world/Boid';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CONSTANTS } from './constants';
 import { map, dist } from './utils';
+import { PlaneGeometry } from 'three';
 
 window.onload = () => {
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+    let alignmentOn = false;
+    let cohesionOn = false;
+    let separationOn = false;
 
     const canvasEl = document.querySelector('#scene_canvas');
     var renderer = new THREE.WebGLRenderer({ canvas: canvasEl });
@@ -44,15 +48,25 @@ window.onload = () => {
         requestAnimationFrame(animate);
 
         controls.update();
+
+        console.log({alignmentOn, cohesionOn, separationOn});
         
         for (let i = 0; i < CONSTANTS.num_boids; i++) {
             const boid = boids[i];
-            const alignmentForce = alignment(boid);
-            const cohesionForce = cohesion(boid);
-            const separationForce = separation(boid);
-            boid.push(alignmentForce);
-            boid.push(cohesionForce);
-            boid.push(separationForce);
+            if (alignmentOn) {
+                const alignmentForce = alignment(boid);
+                boid.push(alignmentForce);
+            }
+
+            if (cohesionOn) {
+                const cohesionForce = cohesion(boid);
+                boid.push(cohesionForce);
+            }
+
+            if (separationOn) {
+                const separationForce = separation(boid);
+                boid.push(separationForce);
+            }
             boid.update();
         }
 
@@ -143,7 +157,7 @@ window.onload = () => {
                 steering.z * steering.z);
 
             if (steeringMag > 0) {
-                const maxSpeed = .005;
+                const maxSpeed = .01;
                 const scaledSteering = {
                     x: steering.x * (maxSpeed / steeringMag),
                     y: steering.y * (maxSpeed / steeringMag),
@@ -217,5 +231,36 @@ window.onload = () => {
     }
 
     animate();
+
+    const buttons = document.querySelectorAll('.button');
+    buttons.forEach(button => {
+        button.addEventListener('click', e => {
+            const classAttribute = e.target.parentElement.getAttribute('class');
+            if (classAttribute == 'button on') {
+                e.target.parentElement.setAttribute('class', 'button off');
+
+                const id = e.target.parentElement.getAttribute('id');
+                if (id === 'alignment-button') {
+                    alignmentOn = false;
+                } else if (id === 'cohesion-button') {
+                    cohesionOn = false;
+                } else {
+                    separationOn = false;
+                }
+            } else {
+                e.target.parentElement.setAttribute('class', 'button on');
+
+                const id = e.target.parentElement.getAttribute('id');
+                if (id === 'alignment-button') {
+                    alignmentOn = true;
+                } else if (id === 'cohesion-button') {
+                    cohesionOn = true;
+                } else {
+                    separationOn = true;
+                }
+            }
+        });
+    });
+
 };
 
